@@ -27,7 +27,8 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const jobsCollection = client.db('jobOrbit').collection('jobs')
+    const jobsCollection = client.db('jobOrbit').collection('jobs');
+    const applicationsCollection = client.db('jobOrbit').collection('applications');
 
     // jobs api
     app.get('/jobs',async(req,res)=>{
@@ -42,6 +43,25 @@ async function run() {
         const query = {_id: new ObjectId(id)}
         const result = await jobsCollection.findOne(query);
         res.send(result);
+    })
+
+    // job applications related apis
+
+    app.get('/applications',async (req,res) => {
+      const email = req.query.email;
+
+      const query = {
+        applicant: email
+      }
+      const result =await applicationsCollection.find(query).toArray();
+      res.send(result);
+    })
+
+    app.post('/applications',async (req,res)=>{
+      const application = req.body;
+      console.log(application);
+      const result = await applicationsCollection.insertOne(application);
+      res.send(result);
     })
 
 
